@@ -1,5 +1,4 @@
-[![Build and Test](https://github.com/alexandre-girard-maif/music-discovery-app-template/actions/workflows/ci.yml/badge.svg)](https://github.com/alexandre-girard-maif/music-discovery-app-template/actions/workflows/ci.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alexandre-girard-maif_music-discovery-app-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=alexandre-girard-maif_music-discovery-app-template)  [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=alexandre-girard-maif_music-discovery-app-template&metric=coverage)](https://sonarcloud.io/summary/new_code?id=alexandre-girard-maif_music-discovery-app-template)
-
+[![Build and Test](https://github.com/lbouda02/music-discovery-app-template/actions/workflows/ci.yml/badge.svg)](https://github.com/lbouda02/music-discovery-app-template/actions/workflows/ci.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lbouda02_music-discovery-app-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lbouda02_music-discovery-app-template)[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=lbouda02_music-discovery-app-template)](https://sonarcloud.io/summary/new_code?id=lbouda02_music-discovery-app-template)
 
 # Music Discovery App
 
@@ -49,7 +48,7 @@ Le fichier `sonar-project.properties` doit également être mis à jour avec les
 
 ## À propos du projet music-discovery-app-project
 
-Les instructions pour les exercices associés à ce template sont disponibles dans le projet GitHub [music-discovery-app-project](https://github.com/users/alexandre-girard-maif/projects/2/views/8).
+Les instructions pour les exercices associés à ce template sont disponibles dans le projet GitHub [music-discovery-app-project](https://github.com/users/lbouda02/projects/2/views/8).
 
 Le projet `music-discovery-app-project` contient une liste de tâches que vous devez suivre pour développer et améliorer l'application.
 
