@@ -1,4 +1,5 @@
-[![Build and Test](https://github.com/lbouda02/music-discovery-app-template/actions/workflows/ci.yml/badge.svg)](https://github.com/lbouda02/music-discovery-app-template/actions/workflows/ci.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lbouda02_music-discovery-app-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lbouda02_music-discovery-app-template)[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=lbouda02_music-discovery-app-template)](https://sonarcloud.io/summary/new_code?id=lbouda02_music-discovery-app-template)
+[![Build and Test](https://github.com/alexandre-girard-maif/music-discovery-app-template/actions/workflows/ci.yml/badge.svg)](https://github.com/alexandre-girard-maif/music-discovery-app-template/actions/workflows/ci.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alexandre-girard-maif_music-discovery-app-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=alexandre-girard-maif_music-discovery-app-template)  [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=alexandre-girard-maif_music-discovery-app-template&metric=coverage)](https://sonarcloud.io/summary/new_code?id=alexandre-girard-maif_music-discovery-app-template)
+
 
 # Music Discovery App
 
@@ -24,15 +25,17 @@ Copiez également le projet `music-discovery-app-project` associé à ce templat
     ```env
     VITE_SPOTIFY_CLIENT_ID=YOUR_SPOTIFY_CLIENT_ID
     ```
+`YOUR_SPOTIFY_CLIENT_ID`est à récupérer depuis le tableau de bord des développeurs Spotify après avoir créé une application, voir la section suivante pour plus de détails.
+
 4. Démarrer le serveur de développement
     ```bash
-    npm start
+    npm run dev
     ``` 
 5. Ouvrir votre navigateur et naviguer vers `http://127.0.0.1:5173`
 
 ## Utilisation de l'API Spotify
 
-Pour utiliser l'API Spotify, vous devez d'abord créer une application sur le [Tableau de bord des développeurs Spotify](https://developer.spotify.com/dashboard/applications). Une fois l'application créée, vous obtiendrez un `Client ID` et un `Client Secret`. Utilisez ces informations pour configurer votre fichier `.env.local`. Assurez-vous également de définir les URI de redirection appropriés dans les paramètres de votre application Spotify pour permettre l'authentification OAuth.
+Pour utiliser l'API Spotify, vous devez d'abord créer une application sur le [Tableau de bord des développeurs Spotify](https://developer.spotify.com/dashboard/applications). Une fois l'application créée, vous obtiendrez un `Client ID` et un `Client Secret`. Utilisez ces informations pour configurer votre fichier `.env.local`. Assurez-vous également de définir les URI de redirection appropriés dans les paramètres de votre application Spotify pour permettre l'authentification OAuth **http://127.0.0.1:5173/callback**.
 
 ![Spotify Dashboard](assets/spotify-dashboard.png)
 
@@ -48,7 +51,7 @@ Le fichier `sonar-project.properties` doit également être mis à jour avec les
 
 ## À propos du projet music-discovery-app-project
 
-Les instructions pour les exercices associés à ce template sont disponibles dans le projet GitHub [music-discovery-app-project](https://github.com/users/lbouda02/projects/2/views/8).
+Les instructions pour les exercices associés à ce template sont disponibles dans le projet GitHub [music-discovery-app-project](https://github.com/users/alexandre-girard-maif/projects/2/views/8).
 
 Le projet `music-discovery-app-project` contient une liste de tâches que vous devez suivre pour développer et améliorer l'application.
 
@@ -62,3 +65,14 @@ Chaque tâche possède plusieurs propriétés:
 - taille estimée (petite, moyenne, grande) permettant d'évaluer le temps nécessaire pour compléter la tâche.
 
 Le projet contient également un répertoire `instructions` avec des fichiers markdown détaillant chaque étape des exercices à réaliser (même contenu que les tâches GitHub), ainsi que des ressources utiles ou nécessaires pour compléter les tâches. Il contient également des instructions globales à suivre pour toutes les tâches [voir `instruction-global.md`](instructions/instruction-global.md).
+
+## Synchronisation avec le template
+
+Ce projet utilise un workflow GitHub Actions pour synchroniser automatiquement les modifications apportées au template `music-discovery-app-template` avec votre propre dépôt cloné.
+
+Le workflow est configuré pour s'exécuter périodiquement (toutes les semaines) et vérifier les mises à jour dans le template. Si des modifications sont détectées, une pull request est automatiquement créée dans votre dépôt avec les changements du template.
+Pour plus de détails sur le fonctionnement de la synchronisation, vous pouvez consulter le fichier `.github/workflows/template-sync.yml`.
+
+Vous devrez configurer votre repository pour autoriser cette synchronisation à créer des pull requests (Settings > Actions > General > Workflow permissions > Allow GitHub Actions to create and approve pull requests) :
+
+![Workflow Permissions](assets/workflow-permissions.png)
