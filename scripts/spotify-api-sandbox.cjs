@@ -1,29 +1,51 @@
+// Fichier : scripts/spotify-api-sandbox.cjs (Corrigé)
+
 const { generateAccessToken } = require("./utils.cjs");
-const { fetchPlaylistById } = require("../src/api/spotify-playlists");
+// NE PAS 'require' le service ici
 
 /**
- * Main function to demonstrate fetching a Spotify playlist.
+ * Main function to test the artist count service.
  */
 const main = async () => {
-  var playlistId = "2IgPkhcHbgQ4s4PdCxljAx";
+  try {
+    // --- Correction : Importation dynamique ---
+    // Nous chargeons le module ESM en utilisant await import()
+    const { artistCountForPlaylist } = await import(
+      '../src/services/artist-count-for-playlist.js'
+    );
+    // ----------------------------------------
 
-  const token = await generateAccessToken();
+    var playlistId = "2IgPkhcHbgQ4s4PdCxljAx";
+    const token = await generateAccessToken();
 
-  // fetch playlist by ID
-  fetchPlaylistById(token, playlistId)
-    .then(({ data }) => {
-      // extract track names and artist names
-      const tracks = data.tracks.items.map((item) => ({
-        trackName: item.track.name,
-        artistNames: item.track.artists.map((artist) => artist.name).join(", "),
+    if (!token) {
+      console.error("Échec de la génération du token. Vérifiez .env.local");
+      return;
+    }
+
+    console.log(`Comptage des artistes pour la playlist : ${playlistId}...`);
+
+    const counts = await artistCountForPlaylist(token, playlistId);
+
+    if (!counts) {
+      console.error("Le service a échoué (voir logs ci-dessus).");
+      return;
+    }
+
+    const sortedArtists = Object.entries(counts)
+      .sort(([, countA], [, countB]) => countB - countA)
+      .slice(0, 5)
+      .map(([artist, count]) => ({
+        "Artist": artist,
+        "Number of Tracks": count,
       }));
 
-      console.log(`Playlist: ${data.name} by ${data.owner.display_name}`);
-      console.table(tracks);
-    })
-    .catch((error) => {
-      console.error("Error fetching playlist:", error);
-    });
+    console.log("\nTop 5 Artists:");
+    console.table(sortedArtists);
+
+  } catch (error) {
+    console.error("Erreur lors de l'exécution du script sandbox:", error);
+  }
 };
 
 main();
