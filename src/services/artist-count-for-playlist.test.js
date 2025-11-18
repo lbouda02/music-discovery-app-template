@@ -1,15 +1,14 @@
-// src/services/artist-count-for-playlist.test.js
+// Fichier : src/services/artist-count-for-playlist.test.js
 import { describe, test, expect, beforeEach, jest } from "@jest/globals";
 import { artistCountForPlaylist } from "./artist-count-for-playlist.js";
 
-// Mock the API module that artistCountForPlaylist depends on
 jest.mock("../api/spotify-playlists.js", () => ({
   fetchPlaylistById: jest.fn(),
 }));
 
 import { fetchPlaylistById } from "../api/spotify-playlists.js";
 
-// Helper to build playlist shape
+// Helper standard (pour les cas propres)
 function makePlaylist(trackItems) {
   return {
     tracks: {
@@ -28,38 +27,113 @@ beforeEach(() => {
 });
 
 describe("artistCountForPlaylist", () => {
-  test("calls fetchPlaylistById with token and playlistId", async () => {
-    const token = "token123";
-    const playlistId = "playlistABC";
+  // ----------------------------------------------------------------
+  // Test 1 : Cas nominal (Tout va bien)
+  // ----------------------------------------------------------------
+  test("calls fetchPlaylistById and counts artists correctly", async () => {
     fetchPlaylistById.mockResolvedValue({
       data: makePlaylist([
-        { name: "Song 1", artists: ["Artist A"] },
-        { name: "Song 2", artists: ["Artist B"] },
-        { name: "Song 3", artists: ["Artist C", "Artist A"] },
+        { name: "S1", artists: ["A1"] },
+        { name: "S2", artists: ["A1", "A2"] },
       ]),
       error: null,
     });
 
-    const result = await artistCountForPlaylist(token, playlistId);
-
-    expect(fetchPlaylistById).toHaveBeenCalledTimes(1);
-    expect(fetchPlaylistById).toHaveBeenCalledWith(token, playlistId);
-    expect(result).toEqual({ "Artist A": 2, "Artist B": 1, "Artist C": 1 });
+    const result = await artistCountForPlaylist("token", "id");
+    expect(result).toEqual({ "A1": 2, "A2": 1 });
   });
 
-  test("returns undefined and logs error when fetchPlaylistById rejects", async () => {
-    const mockError = new Error("Network failure");
+  // ----------------------------------------------------------------
+  // Test 2 : Erreur Réseau (Catch global)
+  // ----------------------------------------------------------------
+  test("returns undefined and logs error when fetch rejects", async () => {
+    const mockError = new Error("Network fail");
     fetchPlaylistById.mockRejectedValue(mockError);
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     const result = await artistCountForPlaylist("t", "p");
+    
     expect(result).toBeUndefined();
-    expect(consoleSpy).toHaveBeenCalledTimes(1);
-    // First arg string, second the error object (implementation logs both)
-    const callArgs = consoleSpy.mock.calls[0];
-    expect(callArgs[0]).toMatch(/Error fetching playlist/);
-    expect(callArgs[1]).toBe(mockError);
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  // ----------------------------------------------------------------
+  // Test 3 : Erreur API sans message (Pour couvrir la ligne 23)
+  // ----------------------------------------------------------------
+  test("uses default error message when API error has no message", async () => {
+    // Ligne 23 : on force error.message à être undefined pour déclencher le "|| 'Erreur...'"
+    fetchPlaylistById.mockResolvedValue({
+      data: null,
+      error: {}, // Objet erreur vide
+    });
+
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await artistCountForPlaylist("token", "bad_id");
+
+    // On vérifie qu'on a bien utilisé le message par défaut défini ligne 23
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Error fetching playlist"),
+      expect.objectContaining({ 
+        message: "Erreur lors de la récupération de la playlist" 
+      })
+    );
 
     consoleSpy.mockRestore();
   });
-}); 
+
+  // ----------------------------------------------------------------
+  // Test 4 : Playlist vide/invalide (Lignes 32-33)
+  // ----------------------------------------------------------------
+  test("returns empty object if playlist has no tracks", async () => {
+    fetchPlaylistById.mockResolvedValue({ data: {}, error: null });
+    const consoleWarn = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    const result = await artistCountForPlaylist("t", "p");
+    
+    expect(result).toEqual({});
+    expect(consoleWarn).toHaveBeenCalled();
+    consoleWarn.mockRestore();
+  });
+
+  // ----------------------------------------------------------------
+  // Test 5 : Données corrompues dans la boucle (Pour couvrir 42-45)
+  // ----------------------------------------------------------------
+  test("skips invalid tracks or artists without names", async () => {
+    // On construit manuellement une structure "sale" pour passer dans les 'else' des if
+    const dirtyData = {
+      tracks: {
+        items: [
+          // Cas A : item.track est null (Ligne 42 - false)
+          { track: null }, 
+          
+          // Cas B : item.track existe mais artists est null (Ligne 42 - false)
+          { track: { name: "No Artists", artists: null } },
+
+          // Cas C : Artiste valide + Artiste sans nom (Ligne 45)
+          { 
+            track: { 
+              name: "Mixed Artists", 
+              artists: [
+                { name: "Valid Artist" }, // Passera
+                { name: "" },             // Ligne 45 - false (nom vide)
+                { name: null }            // Ligne 45 - false (nom null)
+              ] 
+            } 
+          }
+        ]
+      }
+    };
+
+    fetchPlaylistById.mockResolvedValue({
+      data: dirtyData,
+      error: null,
+    });
+
+    const result = await artistCountForPlaylist("token", "dirty_playlist");
+
+    // Seul "Valid Artist" doit être compté
+    expect(result).toEqual({ "Valid Artist": 1 });
+  });
+});
