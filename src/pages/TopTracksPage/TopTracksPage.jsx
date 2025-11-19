@@ -28,6 +28,7 @@ export default function TopTracksPage() {
   const [tracks, setTracks] = useState([]);
 
   // state for loading and error
+  // Initialisé à true, donc pas besoin de le refaire dans useEffect
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,7 +43,7 @@ export default function TopTracksPage() {
   useEffect(() => {
     if (!token) return; // wait for check or redirect
 
-    setLoading(true);
+    // CORRECTION LINTER : Suppression de setLoading(true) ici
 
     // fetch user top tracks when token changes
     fetchUserTopTracks(token, limit, timeRange)

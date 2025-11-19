@@ -15,9 +15,18 @@ export default function PlayListItem({ playlist }) {
     navigate(`/playlist/${playlist.id}`);
   };
 
-  // Fonction pour ouvrir Spotify (externe) sans déclencher la navigation interne
+  // Gestion du clavier pour l'accessibilité
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+        handleGoToDetail();
+    }
+  };
+
+  // Fonction pour ouvrir Spotify (externe)
   const handleExternalLink = (e) => {
-    e.stopPropagation(); // Empêche le clic de "remonter" vers le li
+    // Stop propagation reste utile si le CSS superpose les éléments, 
+    // bien que structurellement ils soient maintenant frères.
+    e.stopPropagation(); 
   };
 
   return (
@@ -25,31 +34,47 @@ export default function PlayListItem({ playlist }) {
       key={playlist.id} 
       data-testid={`playlist-item-${playlist.id}`} 
       className="list-item playlist-item"
-      // On rend toute la carte cliquable
-      onClick={handleGoToDetail}
-      // On ajoute un curseur main pour indiquer que c'est cliquable
-      style={{ cursor: 'pointer' }}
     >
-      <img
-        src={playlist.images[0]?.url}
-        alt="cover"
-        className="playlist-item-cover"
-      />
-      <div className="playlist-item-details">
-        <div className="playlist-item-details-header">
-          <div className="playlist-item-title">{playlist.name}</div>
-          <div className="playlist-item-owner">By {playlist.owner.display_name}</div>
+      {/* CORRECTION : On déplace l'interactivité sur une DIV interne.
+         Le <li> reste un élément de liste neutre.
+         La <div> devient le bouton interactif.
+      */}
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleGoToDetail}
+        onKeyDown={handleKeyDown}
+        // On utilise des styles pour s'assurer que cette div prend la place et aligne le contenu
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          flex: 1, 
+          cursor: 'pointer',
+          outline: 'none' // Optionnel: gérer le focus visible via CSS classe est mieux
+        }}
+      >
+        <img
+          src={playlist.images[0]?.url}
+          alt="cover"
+          className="playlist-item-cover"
+        />
+        <div className="playlist-item-details">
+          <div className="playlist-item-details-header">
+            <div className="playlist-item-title">{playlist.name}</div>
+            <div className="playlist-item-owner">By {playlist.owner.display_name}</div>
+          </div>
+          <div className="playlist-item-tracks">{playlist.tracks.total} tracks</div>
         </div>
-        <div className="playlist-item-tracks">{playlist.tracks.total} tracks</div>
       </div>
       
-      {/* Le bouton "Open" reste, mais on empêche qu'il déclenche aussi la navigation interne */}
+      {/* Le lien est maintenant un frère (sibling) de la zone cliquable, plus un enfant */}
       <a
         href={playlist.external_urls.spotify}
         target="_blank"
         rel="noopener noreferrer"
         className="playlist-link"
         onClick={handleExternalLink}
+        onKeyDown={(e) => e.stopPropagation()}
       >
         Open
       </a>

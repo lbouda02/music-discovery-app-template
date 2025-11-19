@@ -15,7 +15,8 @@ export default function PlaylistDetailPage() {
 
   // États
   const [playlist, setPlaylist] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Initialisé à true, donc la page est DÉJÀ en chargement au montage
+  const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
 
   // Titre de la page par défaut
@@ -27,7 +28,8 @@ export default function PlaylistDetailPage() {
   useEffect(() => {
     if (!token || !id) return;
 
-    setLoading(true);
+    // --- CORRECTION : On supprime setLoading(true) ici ---
+    // Car setLoading(true) déclenche un re-rendu inutile alors que loading est déjà true.
     
     fetchPlaylistById(token, id)
       .then((res) => {
