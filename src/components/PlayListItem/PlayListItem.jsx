@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import './PlayListItem.css';
 import '../ListItem.css';
 
@@ -7,8 +8,28 @@ import '../ListItem.css';
  * @returns JSX.Element
  */
 export default function PlayListItem({ playlist }) {
+  const navigate = useNavigate();
+
+  // Fonction pour naviguer vers la page de détail interne
+  const handleGoToDetail = () => {
+    navigate(`/playlist/${playlist.id}`);
+  };
+
+  // Fonction pour ouvrir Spotify (externe) sans déclencher la navigation interne
+  const handleExternalLink = (e) => {
+    e.stopPropagation(); // Empêche le clic de "remonter" vers le li
+  };
+
   return (
-  <li key={playlist.id} data-testid={`playlist-item-${playlist.id}`} className="list-item playlist-item">
+    <li 
+      key={playlist.id} 
+      data-testid={`playlist-item-${playlist.id}`} 
+      className="list-item playlist-item"
+      // On rend toute la carte cliquable
+      onClick={handleGoToDetail}
+      // On ajoute un curseur main pour indiquer que c'est cliquable
+      style={{ cursor: 'pointer' }}
+    >
       <img
         src={playlist.images[0]?.url}
         alt="cover"
@@ -21,11 +42,14 @@ export default function PlayListItem({ playlist }) {
         </div>
         <div className="playlist-item-tracks">{playlist.tracks.total} tracks</div>
       </div>
+      
+      {/* Le bouton "Open" reste, mais on empêche qu'il déclenche aussi la navigation interne */}
       <a
         href={playlist.external_urls.spotify}
         target="_blank"
         rel="noopener noreferrer"
         className="playlist-link"
+        onClick={handleExternalLink}
       >
         Open
       </a>
