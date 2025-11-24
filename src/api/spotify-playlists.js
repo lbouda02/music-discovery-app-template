@@ -1,4 +1,10 @@
 import { SPOTIFY_API_BASE } from "./spotify-commons.js";
+// 1. Importer l'agent proxy
+import { ProxyAgent } from 'undici';
+
+// 2. Définir votre proxy
+const proxyUrl = 'http://proxy.iutn.univ-poitiers.fr:3128';
+const dispatcher = new ProxyAgent(proxyUrl);
 
 /**
  * Fetch a Spotify playlist by its ID.
@@ -15,6 +21,8 @@ export async function fetchPlaylistById(token, playlistId) {
     // fetch playlist from Spotify API
     const res = await fetch(`${SPOTIFY_API_BASE}/playlists/${playlistId}`, {
       headers: { Authorization: `Bearer ${token}` },
+      // 3. Ajouter le dispatcher pour passer par le proxy
+      dispatcher: dispatcher
     });
     const data = await res.json();
 
