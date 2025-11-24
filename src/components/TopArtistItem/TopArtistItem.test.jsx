@@ -1,74 +1,91 @@
-// src/components/PlayListItem.test.jsx
+// src/components/TopArtistItem.test.jsx (Mis à jour pour TDD)
 
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from '@jest/globals';
 import '@testing-library/jest-dom';
 import { render, screen, within } from '@testing-library/react';
-import TopArtistItem from './TopArtistItem';
+// Assurez-vous que l'import est 'TopArtistItem' (export default)
+import TopArtistItem from './TopArtistItem'; 
 
 describe('TopArtistItem component', () => {
-    test('renders artist information correctly', () => {
-        const artist = {
-            id: 'artist1',
-            name: 'Test Artist',
-            images: [{ url: 'test.jpg' }, { url: 'test-medium.jpg' }, { url: 'test-small.jpg' }],
-            genres: ['pop', 'rock'],
-            followers: { total: 1000 },
-            popularity: 85,
-            external_urls: { spotify: 'https://open.spotify.com/artist/artist1' }
-        };
-        render(<TopArtistItem artist={artist} index={0} />);
+  test('renders artist information correctly with index starting at 1', () => {
+    const artist = {
+      id: 'artist1',
+      name: 'Test Artist',
+      images: [
+        { url: 'test.jpg' },
+        { url: 'test-medium.jpg' },
+        { url: 'test-small.jpg' },
+      ],
+      genres: ['pop', 'rock'],
+      followers: { total: 100 },
+      popularity: 85,
+      external_urls: { spotify: 'https://open.spotify.com/artist/artist1' },
+    };
+    const index = 0; // L'index reçu est 0
 
-        // Verify list item rendering and having expected content
-        const listItem = screen.getByTestId(`top-artist-item-${artist.id}`);
-        expect(listItem).toBeInTheDocument();
+    render(<TopArtistItem artist={artist} index={index} />);
 
-        // should contain artist image (use alt text)
-        const img = within(listItem).getByAltText(artist.name);
-        expect(img).toBeInTheDocument();
-        expect(img).toHaveAttribute('src', artist.images[1].url);
+    // Verify list item rendering
+    const listItem = screen.getByTestId(`top-artist-item-${artist.id}`);
+    expect(listItem).toBeInTheDocument();
 
-        // details assertions
-        expect(listItem).toHaveTextContent(artist.name);
-        expect(listItem).toHaveTextContent(`Genres: ${artist.genres.join(', ')}`);
-        expect(listItem).toHaveTextContent(`Followers: ${artist.followers.total.toLocaleString()}`);
-        expect(listItem).toHaveTextContent(`Popularity: ${artist.popularity}`);
+    // should contain artist image
+    const img = within(listItem).getByAltText(artist.name);
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute('src', artist.images[1].url);
 
-        // link to artist page
-        const link = within(listItem).getByRole('link', { name: /view artist/i });
-        expect(link).toHaveAttribute('href', artist.external_urls.spotify);
+    // --- VÉRIFICATION TDD ---
+    // L'index 0 doit s'afficher comme "1. Test Artist"
+    const expectedTitle = `${index + 1}. ${artist.name}`;
+    const titleElement = within(listItem).getByText(expectedTitle);
+    expect(titleElement).toBeInTheDocument();
+    // --- FIN VÉRIFICATION ---
 
-        // uncomment to debug
-        //screen.debug();
-    });
+    // details assertions
+    expect(listItem).toHaveTextContent(`Genres: ${artist.genres.join(', ')}`);
+    expect(listItem)
+      .toHaveTextContent(`Followers: ${artist.followers.total.toLocaleString()}`);
+    expect(listItem).toHaveTextContent(`Popularity: ${artist.popularity}`);
 
-    test('handles missing artist image gracefully', () => {
-        const artist = {
-            id: 'artist2',
-            name: 'No Image Artist',
-            genres: ['jazz'],
-            // images: [],
-            followers: { total: 500 },
-            external_urls: { spotify: 'https://open.spotify.com/artist/artist2' }
-        };
-        render(<TopArtistItem artist={artist} index={1} />);
+    // link to artist page
+    const link = within(listItem).getByRole('link', { name: /view artist/i });
+    expect(link).toHaveAttribute('href', artist.external_urls.spotify);
+  });
 
-        // Verify list item rendering and having expected content
-        const listItem = screen.getByTestId(`top-artist-item-${artist.id}`);
-        expect(listItem).toBeInTheDocument();
+  test('handles missing artist image and correct index', () => {
+    const artist = {
+      id: 'artist2',
+      name: 'No Image Artist',
+      genres: ['jazz'],
+      // images: [], // images est manquant ou vide
+      followers: { total: 500 },
+      external_urls: { spotify: 'https://open.spotify.com/artist/artist2' },
+    };
+    const index = 1; // L'index reçu est 1
 
-        // should not contain artist image (query by alt)
-        expect(within(listItem).queryByAltText(artist.name)).not.toBeInTheDocument();
+    render(<TopArtistItem artist={artist} index={index} />);
 
-        // details assertions
-        expect(listItem).toHaveTextContent(artist.name);
-        expect(listItem).toHaveTextContent(`Genres: ${artist.genres.join(', ')}`);
-        expect(listItem).toHaveTextContent(`Followers: ${artist.followers.total.toLocaleString()}`);
+    // Verify list item rendering
+    const listItem = screen.getByTestId(`top-artist-item-${artist.id}`);
+    expect(listItem).toBeInTheDocument();
 
-        // link to artist page
-        const link = within(listItem).getByRole('link', { name: /view artist/i });
-        expect(link).toHaveAttribute('href', artist.external_urls.spotify);
+    // should not contain artist image
+    expect(within(listItem).queryByAltText(artist.name)).not.toBeInTheDocument();
 
-        // uncomment to debug
-        //screen.debug();
-    });
+    // --- VÉRIFICATION TDD ---
+    // L'index 1 doit s'afficher comme "2. No Image Artist"
+    const expectedTitle = `${index + 1}. ${artist.name}`;
+    const titleElement = within(listItem).getByText(expectedTitle);
+    expect(titleElement).toBeInTheDocument();
+    // --- FIN VÉRIFICATION ---
+
+    // details assertions
+    expect(listItem).toHaveTextContent(`Genres: ${artist.genres.join(', ')}`);
+    expect(listItem)
+      .toHaveTextContent(`Followers: ${artist.followers.total.toLocaleString()}`);
+
+    // link to artist page
+    const link = within(listItem).getByRole('link', { name: /view artist/i });
+    expect(link).toHaveAttribute('href', artist.external_urls.spotify);
+  });
 });
