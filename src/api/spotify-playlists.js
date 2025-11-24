@@ -1,4 +1,10 @@
 import { SPOTIFY_API_BASE } from "./spotify-commons.js";
+// 1. Importer l'agent proxy
+import { ProxyAgent } from 'undici';
+
+// 2. Définir votre proxy
+const proxyUrl = 'http://proxy.iutn.univ-poitiers.fr:3128';
+const dispatcher = new ProxyAgent(proxyUrl);
 
 /**
  * Fetch a Spotify playlist by its ID.
@@ -11,20 +17,36 @@ export async function fetchPlaylistById(token, playlistId) {
   if (!token) {
     return { error: 'No access token found.', data: null };
   }
+
   try {
+    // Construction de l'URL
+    const url = `${SPOTIFY_API_BASE}/playlists/${playlistId}`;
+
+    // --- DEBUT DEBUG ---
+    console.log("%c[API DEBUG] URL appelée :", "color: orange; font-weight: bold;", url);
+    console.log("%c[API DEBUG] ID reçu :", "color: orange; font-weight: bold;", `"${playlistId}"`);
+    // --- FIN DEBUG ---
+
     // fetch playlist from Spotify API
-    const res = await fetch(`${SPOTIFY_API_BASE}/playlists/${playlistId}`, {
+    const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
+      // 3. Ajouter le dispatcher pour passer par le proxy
+      dispatcher: dispatcher
     });
+    
     const data = await res.json();
 
     // handle potential API error
     if (data.error) {
+      console.error("[API ERROR]", data.error); // Log l'erreur spécifique de Spotify
       return { error: data.error.message, data: null };
     }
+
     // return fetched playlist
     return { data, error: null };
-  } catch {
+
+  } catch (err) {
+    console.error("[NETWORK ERROR]", err);
     return { error: 'Failed to fetch playlist.', data: null };
   }
 }

@@ -1,3 +1,5 @@
+/** @jest-environment node */
+
 // src/api/spotify-playlists.test.js
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import { fetchPlaylistById } from "./spotify-playlists";
@@ -23,6 +25,7 @@ describe("spotify-playlists API", () => {
     test("returns playlist on successful fetch", async () => {
       const mockPlaylist = { id: "playlist123", name: "My Playlist" };
       globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true, // Simule une réponse HTTP réussie
         json: jest.fn().mockResolvedValue(mockPlaylist),
       });
 
@@ -31,6 +34,7 @@ describe("spotify-playlists API", () => {
         `${SPOTIFY_API_BASE}/playlists/playlist123`,
         {
           headers: { Authorization: "Bearer valid_token" },
+          dispatcher: expect.anything(), // Vérifie que le dispatcher est passé (pour le proxy)
         }
       );
       expect(result).toEqual({
@@ -42,6 +46,7 @@ describe("spotify-playlists API", () => {
     test("returns error if Spotify API returns error in response", async () => {
       const mockError = { error: { message: "Invalid playlist ID" } };
       globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true, // La requête a réussi, mais l'API retourne une erreur logique
         json: jest.fn().mockResolvedValue(mockError),
       });
 
@@ -52,12 +57,26 @@ describe("spotify-playlists API", () => {
       });
     });
 
+    test("returns error if fetch response is not ok", async () => {
+      const mockError = { error: { message: "Not Found" } };
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: false, // Simule une réponse HTTP 404 ou 500
+        json: jest.fn().mockResolvedValue(mockError),
+      });
+
+      const result = await fetchPlaylistById("valid_token", "not_found_id");
+      expect(result).toEqual({
+        error: "Not Found", // S'attend à ce que le message d'erreur soit extrait
+        data: null,
+      });
+    });
+
     test("returns error if fetch throws", async () => {
       globalThis.fetch = jest.fn().mockRejectedValue(new Error("Network error"));
 
       const result = await fetchPlaylistById("any_token", "playlist123");
       expect(result).toEqual({
-        error: "Failed to fetch playlist.",
+        error: "Failed to fetch playlist.", // Correspond au bloc catch
         data: null,
       });
     });

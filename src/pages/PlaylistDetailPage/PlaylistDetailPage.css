@@ -1,0 +1,95 @@
+/* États de chargement et erreur (cohérent avec TopArtistsPage) */
+.playlist-loading, 
+.playlist-error {
+  display: block;
+  margin-top: 20vh;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.playlist-error {
+  color: red; /* ou var(--color-error) si défini */
+}
+
+/* Layout principal */
+.playlist-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Sur écran large (tablette/desktop), on met l'image à gauche et le texte à droite */
+@media (min-width: 768px) {
+  .playlist-header {
+    flex-direction: row;
+    align-items: flex-end;
+    text-align: left;
+    gap: 2rem;
+  }
+}
+
+/* Image de couverture */
+.playlist-cover {
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  box-shadow: 0 4px 60px rgba(0,0,0,0.5);
+  border-radius: 4px;
+}
+
+/* Informations texte */
+.playlist-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.playlist-description {
+  color: #b3b3b3; /* Gris clair typique Spotify */
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.playlist-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center; /* Centré sur mobile */
+}
+
+@media (min-width: 768px) {
+  .playlist-actions {
+    justify-content: flex-start; /* À gauche sur desktop */
+  }
+}
+
+.playlist-meta {
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+/* Liste temporaire (sera remplacée par TrackItem plus tard) */
+.playlist-tracks-list {
+  list-style: decimal inside;
+  padding-left: 1rem;
+}
+
+.simple-track-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
