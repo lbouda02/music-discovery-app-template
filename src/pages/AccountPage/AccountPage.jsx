@@ -32,24 +32,17 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!token) return; // wait for auth check
-    
     // fetch user profile when token changes
     fetchAccountProfile(token)
       .then(res => {
         if (res.error) {
           if (!handleTokenError(res.error, navigate)) {
-            // Si l'erreur n'est pas une erreur de token, on l'affiche
-            // On gère le cas où res.error est un objet ou une string
-            setError(res.error.message || res.error);
+            setError(res.error);
           }
-          // IMPORTANT : On arrête ici si erreur
-          return;
         }
         setProfile(res.data);
       })
-      .catch(err => { 
-        setError(err.message || 'Une erreur est survenue'); 
-      })
+      .catch(err => { setError(err.message); })
       .finally(() => { setLoading(false); });
   }, [token, navigate]);
 
@@ -61,9 +54,7 @@ export default function AccountPage() {
           Loading account info…
         </output>
       )}
-      
       {error && !loading && <div className="account-error" role="alert">{error}</div>}
-      
       {!loading && !error && profile && (
         <>
           <img className="account-avatar" src={profile.images?.[0]?.url} alt="avatar" />

@@ -3,8 +3,6 @@ import WelcomePage from './pages/WelcomePage/WelcomePage.jsx';
 import TopTracksPage from './pages/TopTracksPage/TopTracksPage.jsx';
 import TopArtistsPage from './pages/TopArtistsPage/TopArtistsPage.jsx';
 import PlaylistsPage from './pages/PlaylistsPage/PlaylistsPage.jsx';
-// 1. Import de la nouvelle page
-import PlaylistDetailPage from './pages/PlaylistDetailPage/PlaylistDetailPage.jsx';
 import Callback from './pages/Callback.jsx';
 import Layout from './components/Layout/Layout.jsx';
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
@@ -23,8 +21,6 @@ const router = createBrowserRouter([
       { path: 'top-tracks', element: <TopTracksPage /> },
       { path: 'top-artists', element: <TopArtistsPage /> },
       { path: 'playlists', element: <PlaylistsPage /> },
-      // 2. Ajout de la route dynamique pour le détail d'une playlist
-      { path: 'playlist/:id', element: <PlaylistDetailPage /> },
       { path: '*', element: <NotFoundPage /> }
     ]
   }

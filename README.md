@@ -1,4 +1,4 @@
-[![Build and Test](https://github.com/lbouda02/music-discovery-app-template/actions/workflows/ci.yml/badge.svg)](https://github.com/lbouda02/music-discovery-app-template/actions/workflows/ci.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lbouda02_music-discovery-app-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lbouda02_music-discovery-app-template)[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=lbouda02_music-discovery-app-template)](https://sonarcloud.io/summary/new_code?id=lbouda02_music-discovery-app-template)
+[![Build and Test](https://github.com/alexandre-girard-maif/music-discovery-app-template/actions/workflows/ci.yml/badge.svg)](https://github.com/alexandre-girard-maif/music-discovery-app-template/actions/workflows/ci.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alexandre-girard-maif_music-discovery-app-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=alexandre-girard-maif_music-discovery-app-template)  [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=alexandre-girard-maif_music-discovery-app-template&metric=coverage)](https://sonarcloud.io/summary/new_code?id=alexandre-girard-maif_music-discovery-app-template)
 
 
 # Music Discovery App
@@ -76,3 +76,6 @@ Pour plus de détails sur le fonctionnement de la synchronisation, vous pouvez c
 Vous devrez configurer votre repository pour autoriser cette synchronisation à créer des pull requests (Settings > Actions > General > Workflow permissions > Allow GitHub Actions to create and approve pull requests) :
 
 ![Workflow Permissions](assets/workflow-permissions.png)
+
+
+Demo
