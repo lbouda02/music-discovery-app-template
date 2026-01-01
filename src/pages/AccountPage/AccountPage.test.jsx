@@ -1,3 +1,5 @@
+// src/pages/AccountPage.test.jsx
+
 import { describe, expect, test, beforeEach, afterEach, jest } from '@jest/globals';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -5,11 +7,6 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import AccountPage from './AccountPage.jsx';
 import * as spotifyApi from '../../api/spotify-me.js';
 import { KEY_ACCESS_TOKEN } from '../../constants/storageKeys.js';
-// Import de la fonction utilitaire pour pouvoir contrôler son comportement
-import { handleTokenError } from '../../utils/handleTokenError.js';
-
-// 1. On mocke le module utilitaire pour contrôler le retour de handleTokenError
-jest.mock('../../utils/handleTokenError.js');
 
 // Mock profile data
 const profileData = {
@@ -35,10 +32,6 @@ describe('AccountPage', () => {
 
         // Default mock: successful profile fetch
         jest.spyOn(spotifyApi, 'fetchAccountProfile').mockResolvedValue({ data: profileData, error: null });
-
-        // 2. Configuration par défaut : handleTokenError retourne false
-        // Cela signifie "je n'ai pas géré l'erreur (ce n'est pas un souci de token), donc affiche l'erreur"
-        handleTokenError.mockReturnValue(false);
     });
 
     // Restore mocks after each test
@@ -119,7 +112,6 @@ describe('AccountPage', () => {
         await waitForLoadingToFinish();
 
         // Verify error message displayed
-        // Ici, handleTokenError retourne false (par défaut), donc le composant affiche l'erreur
         const alert = await screen.findByRole('alert');
         expect(alert).toHaveTextContent('Failed to fetch profile');
     });
@@ -140,18 +132,8 @@ describe('AccountPage', () => {
     });
 
     test('redirects to login on token expiration', async () => {
-        // Mock API returning 401
-        jest.spyOn(spotifyApi, 'fetchAccountProfile').mockResolvedValue({ 
-            profile: null, 
-            error: { status: 401, message: 'The access token expired' } 
-        });
-
-        // 3. CORRECTION MAJEURE : On implémente le comportement de handleTokenError pour ce test
-        // On simule qu'elle détecte l'erreur 401, navigue vers /login et retourne true
-        handleTokenError.mockImplementation((error, navigate) => {
-            navigate('/login');
-            return true; 
-        });
+        // Mock fetchAccountProfile to return token expired error
+        jest.spyOn(spotifyApi, 'fetchAccountProfile').mockResolvedValue({ profile: null, error: 'The access token expired' });
 
         // Render AccountPage
         renderAccountPage();
@@ -160,8 +142,6 @@ describe('AccountPage', () => {
         await waitForLoadingToFinish();
 
         // Verify redirection to login page
-        // Maintenant, le composant n'affiche pas l'erreur (car handleTokenError a retourné true)
-        // et le routeur a affiché le composant Login
         expect(screen.getByText('Login Page')).toBeInTheDocument();
     });
 
