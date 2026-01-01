@@ -1,11 +1,5 @@
 var dotenv = require("dotenv");
-const { ProxyAgent } = require("undici"); // Importer ProxyAgent
-
 dotenv.config({ path: ".env.local" });
-
-// Définir l'agent proxy
-const proxyUrl = 'http://proxy.iutn.univ-poitiers.fr:3128';
-const dispatcher = new ProxyAgent(proxyUrl);
 
 /**
  * Encodes client ID and secret for Basic Auth.
@@ -31,19 +25,14 @@ function generateAccessToken() {
       )
     );
   }
-  // La variable est définie ici (base64)
   var base64AuthString = encodeBasicAuth(clientId, clientSecret);
-  
   return fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
-      // CORRECTION ICI: base664AuthString -> base64AuthString
       Authorization: "Basic " + base64AuthString,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "grant_type=client_credentials",
-    // Ajout du dispatcher pour le proxy
-    dispatcher: dispatcher 
   })
     .then(function (response) {
       return response.json();
